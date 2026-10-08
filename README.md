@@ -1,6 +1,6 @@
-# BringYourOwnAI
+# Secure AI API Gateway & Chat System
 
-BringYourOwnAI is a security-first full-stack chatbot where users bring their own model API key at runtime. Keys are processed in-memory only and are never persisted.
+A security-focused full-stack AI chat application that validates client requests and forwards them through a Node.js/Express backend to a configured upstream model API. Users provide their API keys at runtime; the application is designed to handle these credentials in memory without persisting them. The current implementation uses an OpenAI-style upstream API and does not yet implement multi-provider routing.
 
 ## Why this project exists
 Most chatbot demos optimize convenience over safety. This project takes the opposite approach:
