@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const envSchema = z.object({
+export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().min(1).max(65535).default(4000),
   FRONTEND_ORIGIN: z.string().url(),
@@ -15,7 +15,14 @@ const envSchema = z.object({
   RATE_LIMIT_MAX: z.coerce.number().int().min(1).default(30),
   TRUST_PROXY: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
   UPSTREAM_API_URL: z.string().url(),
-  UPSTREAM_MODEL: z.string().min(1).max(128)
+  UPSTREAM_MODEL: z.string().min(1).max(128),
+  DATABASE_URL: z.string().url().refine(value => /^postgres(ql)?:\/\//.test(value)).optional(),
+  DB_POOL_MAX: z.coerce.number().int().min(1).max(20).default(5),
+  DB_TIMEOUT_MS: z.coerce.number().int().min(100).max(5000).default(1500),
+  TELEMETRY_QUEUE_SIZE: z.coerce.number().int().min(1).max(10000).default(500),
+  TELEMETRY_RETENTION_DAYS: z.coerce.number().int().min(1).max(365).default(30),
+  ANALYTICS_LOCAL_ENABLED: z.enum(['true', 'false']).default('false').transform(value => value === 'true'),
+  ANALYTICS_LOCAL_SECRET: z.string().min(32).max(256).optional()
 });
 
 export type AppConfig = z.infer<typeof envSchema>;
@@ -59,6 +66,9 @@ export const getConfig = (): AppConfig => {
   }
 
   assertProductionSecurity(parsed.data);
+  if (parsed.data.ANALYTICS_LOCAL_ENABLED && (parsed.data.NODE_ENV === 'production' || parsed.data.TRUST_PROXY || !parsed.data.ANALYTICS_LOCAL_SECRET || !['localhost', '127.0.0.1', '[::1]'].includes(new URL(parsed.data.FRONTEND_ORIGIN).hostname))) {
+    throw new Error('Local analytics requires development mode, no trusted proxy, a loopback frontend, and a separate admin secret');
+  }
   cachedConfig = parsed.data;
   return parsed.data;
 };

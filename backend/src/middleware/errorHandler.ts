@@ -13,11 +13,12 @@ export const errorHandler = (err: unknown, req: Request, res: Response, _next: N
   }
 
   if (err instanceof ZodError) {
+    req.errorCategory = 'validation_error';
     res.status(400).json({
       error: {
         code: 'VALIDATION_ERROR',
         message: 'Invalid request payload.',
-        details: err.issues.map((issue) => ({ path: issue.path.join('.'), message: issue.message }))
+        details: err.issues.map((issue) => ({ code: issue.code }))
       },
       requestId
     });
@@ -47,6 +48,7 @@ export const errorHandler = (err: unknown, req: Request, res: Response, _next: N
   }
 
   if (err instanceof AppError) {
+    req.errorCategory = err.category;
     logger.warn('app_error', {
       requestId,
       category: err.category,

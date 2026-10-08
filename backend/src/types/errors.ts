@@ -3,7 +3,8 @@ export type ErrorCategory =
   | 'rate_limit_error'
   | 'timeout_error'
   | 'upstream_error'
-  | 'internal_error';
+  | 'internal_error'
+  | 'database_unavailable';
 
 export class AppError extends Error {
   readonly statusCode: number;

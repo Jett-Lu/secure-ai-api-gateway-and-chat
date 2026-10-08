@@ -1,6 +1,7 @@
 import { getConfig } from '../config/env.js';
 import type { ChatMessage } from '../types/chat.js';
 import { AppError } from '../types/errors.js';
+import { normalizeUsage } from './usage.js';
 
 interface UpstreamChoice {
   message?: {
@@ -62,8 +63,9 @@ export const requestChatCompletion = async (
       throw new AppError('Upstream returned unsupported content type.', 502, 'upstream_error');
     }
 
-    const data = (await response.json()) as UpstreamResponse;
-    const reply = data.choices?.[0]?.message?.content?.trim();
+    const data = (await response.json()) as UpstreamResponse | null;
+    const content = data?.choices?.[0]?.message?.content;
+    const reply = typeof content === 'string' ? content.trim() : undefined;
 
     if (!reply) {
       throw new AppError('Upstream response was empty.', 502, 'upstream_error');
@@ -73,13 +75,15 @@ export const requestChatCompletion = async (
       throw new AppError('Upstream response exceeded message limits.', 502, 'upstream_error');
     }
 
-    return { reply, usage: data.usage };
+    const usage = normalizeUsage(data?.usage);
+    return { reply, usage: { prompt_tokens: usage.promptTokens ?? undefined,
+      completion_tokens: usage.completionTokens ?? undefined, total_tokens: usage.totalTokens ?? undefined } };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
     }
 
-    if (error instanceof Error && error.name === 'AbortError') {
+    if (controller.signal.aborted || (error instanceof Error && error.name === 'AbortError')) {
       if (requestSignal?.aborted && requestSignal.reason !== 'request_timeout') {
         throw new AppError('Request was cancelled.', 499, 'timeout_error', false);
       }

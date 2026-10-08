@@ -2,8 +2,11 @@ import { ApiKeyPanel } from './components/ApiKeyPanel';
 import { ChatWindow } from './components/ChatWindow';
 import { Composer } from './components/Composer';
 import { useChat } from './hooks/useChat';
+import { useState } from 'react';
+import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 
 function App() {
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const {
     apiKey,
     setApiKey,
@@ -42,7 +45,7 @@ function App() {
     <main className="app-shell">
       <header className="page-header">
         <div>
-          <h1>BringYourOwnAI</h1>
+          <h1>Secure AI API Gateway &amp; Chat System</h1>
           <p className="subtle-text">Security-first chat interface with runtime-only secrets and backend orchestration.</p>
         </div>
       </header>
@@ -134,6 +137,8 @@ function App() {
       </section>
 
       <footer className="page-footer">
+        <button className="button" aria-expanded={showAnalytics} onClick={() => setShowAnalytics(value => !value)}>{showAnalytics ? 'Hide analytics' : 'Usage analytics'}</button>
+        {showAnalytics ? <AnalyticsDashboard /> : null}
         <p>Request path: browser to backend to upstream model.</p>
       </footer>
     </main>
