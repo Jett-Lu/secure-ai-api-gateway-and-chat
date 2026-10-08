@@ -1,4 +1,4 @@
-# Secure AI API Gateway & Chat System
+# Secure AI API Gateway and Chat System
 
 A security-focused full-stack AI chat application that validates client requests and forwards them through a Node.js/Express backend to a configured upstream model API. Users provide their API keys at runtime; the application is designed to handle these credentials in memory without persisting them. The current implementation uses an OpenAI-style upstream API and does not yet implement multi-provider routing.
 
