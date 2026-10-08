@@ -26,8 +26,8 @@ const originPolicy = (
     callback(new AppError('Origin is not allowed.', 403, 'validation_error'));
 };
 
-export const corsPolicyMiddleware = cors({
+export const corsPolicyMiddleware = cors<import('express').Request>((req, callback) => callback(null, {
   origin: originPolicy,
   methods: ['GET', 'POST'],
-  credentials: false
-});
+  credentials: req.path.startsWith('/api/analytics/')
+}));

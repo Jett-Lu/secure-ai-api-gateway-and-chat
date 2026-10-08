@@ -13,13 +13,14 @@ const apiKeySchema = z
 const messageSchema = z.object({
   role: z.enum(['system', 'user', 'assistant']),
   content: z.string().trim().min(1).max(config.MAX_MESSAGE_CHARS)
-});
+}).strict();
 
 export const chatSchema = z
   .object({
     apiKey: apiKeySchema,
     messages: z.array(messageSchema).min(1).max(config.MAX_MESSAGES)
   })
+  .strict()
   .superRefine((payload, ctx) => {
     const userMessages = payload.messages.filter((m) => m.role === 'user');
     if (userMessages.length === 0) {

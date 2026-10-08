@@ -1,0 +1,150 @@
+{
+  "id": "12a5e677-3cec-4a30-aaca-713b3ac0f1b9",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.ai_requests": {
+      "name": "ai_requests",
+      "schema": "",
+      "columns": {
+        "request_id": {
+          "name": "request_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model": {
+          "name": "model",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duration_ms": {
+          "name": "duration_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prompt_tokens": {
+          "name": "prompt_tokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completion_tokens": {
+          "name": "completion_tokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_tokens": {
+          "name": "total_tokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "outcome": {
+          "name": "outcome",
+          "type": "varchar(7)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status_code": {
+          "name": "status_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "error_category": {
+          "name": "error_category",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "ai_requests_timestamp_idx": {
+          "name": "ai_requests_timestamp_idx",
+          "columns": [
+            {
+              "expression": "timestamp",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ai_requests_model_timestamp_idx": {
+          "name": "ai_requests_model_timestamp_idx",
+          "columns": [
+            {
+              "expression": "model",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "timestamp",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "valid_duration": {
+          "name": "valid_duration",
+          "value": "\"ai_requests\".\"duration_ms\" >= 0"
+        },
+        "valid_tokens": {
+          "name": "valid_tokens",
+          "value": "(\"ai_requests\".\"prompt_tokens\" IS NULL OR \"ai_requests\".\"prompt_tokens\" >= 0) AND (\"ai_requests\".\"completion_tokens\" IS NULL OR \"ai_requests\".\"completion_tokens\" >= 0) AND (\"ai_requests\".\"total_tokens\" IS NULL OR \"ai_requests\".\"total_tokens\" >= 0)"
+        },
+        "valid_outcome": {
+          "name": "valid_outcome",
+          "value": "\"ai_requests\".\"outcome\" IN ('success', 'failure')"
+        },
+        "valid_status": {
+          "name": "valid_status",
+          "value": "\"ai_requests\".\"status_code\" BETWEEN 100 AND 599"
+        },
+        "valid_error": {
+          "name": "valid_error",
+          "value": "\"ai_requests\".\"error_category\" IS NULL OR \"ai_requests\".\"error_category\" IN ('validation_error', 'rate_limit_error', 'timeout_error', 'upstream_error', 'internal_error', 'client_cancelled')"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

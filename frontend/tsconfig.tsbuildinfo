@@ -1,1 +1,0 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/components/apikeypanel.tsx","./src/components/chatwindow.tsx","./src/components/composer.tsx","./src/hooks/usechat.ts","./src/services/api.ts","./src/state/chatlimits.ts","./src/types/chat.ts"],"version":"5.9.3"}

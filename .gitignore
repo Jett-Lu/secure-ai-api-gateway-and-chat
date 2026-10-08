@@ -9,3 +9,8 @@ dist
 backend/node_modules
 frontend/node_modules
 reference-sentinel-ai/
+.test-tools/
+test-results/
+playwright-report/
+dependency-audit.json
+*.tsbuildinfo

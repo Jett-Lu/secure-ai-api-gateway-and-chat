@@ -9,6 +9,11 @@ process.env.UPSTREAM_MODEL = 'gpt-4o-mini';
 const { chatSchema } = await import('../src/validation/chat.js');
 
 describe('chatSchema', () => {
+  it('rejects unknown top-level and message fields', () => {
+    const input = { apiKey: 'sk_test_abcdefghijklmnopqrstuvwxyz', messages: [{ role: 'user', content: 'hello' }] };
+    expect(chatSchema.safeParse({ ...input, administrator: true }).success).toBe(false);
+    expect(chatSchema.safeParse({ ...input, messages: [{ ...input.messages[0], token: 'secret' }] }).success).toBe(false);
+  });
   it('accepts valid chat payload', () => {
     const result = chatSchema.safeParse({
       apiKey: 'sk_test_abcdefghijklmnopqrstuvwxyz',
